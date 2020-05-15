@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mysql-rs
+spec:
+  replicas: 3
+  template:
+    metadata:
+      name: mysql-pod
+      labels:
+        app: app1
+        tier: tier1
+        restart: alway
+    spec:
+      containers:
+      - name: mysql-container
+        image: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD 
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: password
+        ports:
+        - containerPort: 3306
+  selector:
+    matchLabels:
+      app: app1
+    matchExpressions:
+      - {key: tier, operator: In, values: [tier1]}
